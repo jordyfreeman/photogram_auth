@@ -1,0 +1,77 @@
+<% @my_likes.each do |my_like| %>
+  <div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <a href="/users/<%= my_like.user_id %>"><%= my_like.user.username %></a>
+          <small>
+            <%=time_ago_in_words(my_like.photo.created_at)%>
+          </small>
+        </h3>
+
+  <div class="panel-body">
+        <a href="/photos/<%= my_like.photo.user_id %>">
+          <img src="<%= my_like.photo.image %>" class="img-responsive">
+        </a>
+        <p>
+            <form action="/create_like" method="post">
+              <!-- Hidden input for authenticity token to protect from forgery -->
+              <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>">
+
+              <input type="hidden" name="photo_id" value="<%= my_like.photo.id %>">
+
+              <input type="hidden" name="user_id" value="<%= current_user.id %>">
+
+              <button class="btn btn-link">
+                <i class="fa fa-heart-o"></i>
+              </button>
+              <% usernames = [] %>
+              <% my_like.photo.likes.each do |like| %>
+              <% usernames.push(like.user.username) %>
+              <% end %>
+              <%= usernames.to_sentence %>
+            </form>
+        </p>
+        <ul class="media-list">
+
+          <li class="media">
+            <div class="media-body">
+              <h6 class="media-heading">
+                <a href="/users/<%= my_like.user_id %>"><%= my_like.user.username %></a>
+                <small>
+                  <%=time_ago_in_words(my_like.photo.created_at)%>
+                </small>
+              </h6>
+              <%= my_like.photo.comments.pluck(:body).to_sentence %>
+            </div>
+          </li>
+        </div>
+          <li class="media">
+            <div class="media-body">
+              <form action="/create_comment" method="post">
+                <!-- Hidden input for authenticity token to protect from forgery -->
+                <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>">
+
+                <input type="hidden" name="photo_id" value="<%= my_like.photo.id %>">
+
+                <input type="hidden" name="user_id" value="<%= current_user.id %>">
+
+                <!-- Label and input for body -->
+                <div class="form-group">
+                  <label for="body" class="sr-only">
+                  Body
+                  </label>
+
+                  <input type="text" id="body" name="body" placeholder="Add a comment..." class="form-control" required>
+                </div>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+   </div>
+ </div>
+
+      <% end %>
